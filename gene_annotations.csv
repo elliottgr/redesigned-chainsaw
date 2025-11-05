@@ -1,0 +1,172 @@
+﻿gene,genbank_accession,functions,cluster
+sleM1,MF990787.1,Modification,Streptolancidin E
+ssaA,MF990795.1,Bacteriocin precursor,Streptosactin
+cibA,NC_003028.3,Bacteriocin precursor,Cib
+cibB,NC_003028.3,Bacteriocin precursor,Cib
+scaA,MF990778.1,Bacteriocin precursor,Streptococcin A
+scbA,MF990779.1,Bacteriocin precursor,Streptococcin B
+sccA,MF990780.1,Bacteriocin precursor,Streptococcin C
+scdA,MF990781.1,Bacteriocin precursor,Streptococcin D
+sceA,MF990782.1,Bacteriocin precursor,Streptococcin E
+scyA,MF990796.1,Bacteriocin precursor,Streptocyclicin
+slaA1,MF990783.1,Bacteriocin precursor,Streptolancidin A
+slaA2,MF990783.1,Bacteriocin precursor,Streptolancidin A
+slaA3,MF990783.1,Bacteriocin precursor,Streptolancidin A
+slaA4,MF990783.1,Bacteriocin precursor,Streptolancidin A
+slaA5,MF990783.1,Bacteriocin precursor,Streptolancidin A
+slbA,MF990784.1,Bacteriocin precursor,Streptolancidin B
+slcA,MF990785.1,Bacteriocin precursor,Streptolancidin C
+sldA,MF990786.1,Bacteriocin precursor,Streptolancidin D
+sleA1 ,MF990787.1,Bacteriocin precursor,Streptolancidin E
+sleA2,MF990787.1,Bacteriocin precursor,Streptolancidin E
+slfA,MF990788.1,Bacteriocin precursor,Streptolancidin F
+slgA1,MF990789.1,Bacteriocin precursor,Streptolancidin G
+slgA2,MF990789.1,Bacteriocin precursor,Streptolancidin G
+slhA,MF990790.1,Bacteriocin precursor,Streptolancidin H
+sliA,MF990791.1,Bacteriocin precursor,Streptolancidin I
+sljA1,MF990792.1,Bacteriocin precursor,Streptolancidin J
+sljA2,MF990792.1,Bacteriocin precursor,Streptolancidin J
+slkA,MF990793.1,Bacteriocin precursor,Streptolancidin K
+slsA,MF990794.1,Bacteriocin precursor,Streptolassin
+blpO,na,Bacteriocin precursor,blp
+blpQ,na,Bacteriocin precursor,blp
+pncT,na,Bacteriocin precursor,blp
+blpD,na,Bacteriocin precursor,blp
+blpE,na,Bacteriocin precursor,blp
+blpW,na,Bacteriocin precursor,blp
+pncW,na,Bacteriocin precursor,blp
+blpI2,na,Bacteriocin precursor,blp
+blpKN,na,Bacteriocin precursor,blp
+blpMN1,na,Bacteriocin precursor,blp
+blpMN2,na,Bacteriocin precursor,blp
+blpQM,na,Bacteriocin precursor,blp
+blpI,na,Bacteriocin precursor,blp
+blpJ,na,Bacteriocin precursor,blp
+blpK,na,Bacteriocin precursor,blp
+blpM,na,Bacteriocin precursor,blp
+blpN,na,Bacteriocin precursor,blp
+blpU,na,Bacteriocin precursor,blp
+ssaP,MF990795.1,Other,Streptosactin
+scyB,MF990796.1,Immunity,Streptocyclicin
+scyC,MF990796.1,Immunity,Streptocyclicin
+scyE,MF990796.1,Immunity,Streptocyclicin
+blpY,na,Immunity,blp
+blpG,na,Immunity,blp
+pncP,na,Immunity,blp
+cibC,NC_003028.3,Immunity,Cib
+scaB,MF990778.1,Immunity,Streptococcin A
+scaC,MF990778.1,Immunity,Streptococcin A
+scbB,MF990779.1,Immunity,Streptococcin B
+scbC,MF990779.1,Immunity,Streptococcin B
+sccB,MF990780.1,Immunity,Streptococcin C
+sccC,MF990780.1,Immunity,Streptococcin C
+scdB,MF990781.1,Immunity,Streptococcin D
+scdC,MF990781.1,Immunity,Streptococcin D
+sceB,MF990782.1,Immunity,Streptococcin E
+sceC,MF990782.1,Immunity,Streptococcin E
+slaF,MF990783.1,Immunity,Streptolancidin A
+slaE,MF990783.1,Immunity,Streptolancidin A
+slbF,MF990784.1,Immunity,Streptolancidin B
+slbG,MF990784.1,Immunity,Streptolancidin B
+slbE,MF990784.1,Immunity,Streptolancidin B
+sleF,MF990787.1,Immunity,Streptolancidin E
+sleG,MF990787.1,Immunity,Streptolancidin E
+slhF,MF990790.1,Immunity,Streptolancidin H
+slhE,MF990790.1,Immunity,Streptolancidin H
+slhG,MF990790.1,Immunity,Streptolancidin H
+slhI,MF990790.1,Immunity,Streptolancidin H
+sliF,MF990791.1,Immunity,Streptolancidin I
+sliE,MF990791.1,Immunity,Streptolancidin I
+sliG,MF990791.1,Immunity,Streptolancidin I
+sliI,MF990791.1,Immunity,Streptolancidin I
+slsF,MF990794.1,Immunity,Streptolassin
+slsE,MF990794.1,Immunity,Streptolassin
+slsG,MF990794.1,Immunity,Streptolassin
+blpP,na,Immunity,blp
+pncG,na,Immunity,blp
+blpL,na,Immunity,blp
+pncM,na,Immunity,blp
+blpF,na,Immunity,blp
+blpX,na,Immunity,blp
+blpZ,na,Immunity,blp
+slaM,MF990783.1,Modification,Streptolancidin A
+slbM,MF990784.1,Modification,Streptolancidin B
+slcL,MF990785.1,Modification,Streptolancidin C
+sleM2,MF990787.1,Modification,Streptolancidin E
+sleM3,MF990787.1,Modification,Streptolancidin E
+slfL,MF990788.1,Modification,Streptolancidin F
+slgM,MF990789.1,Modification,Streptolancidin G
+sljL,MF990792.1,Modification,Streptolancidin J
+slkL,MF990793.1,Modification,Streptolancidin K
+sldB,MF990786.1,Other,Streptolancidin D
+sldC,MF990786.1,Other,Streptolancidin D
+slgD,MF990789.1,Other,Streptolancidin G
+slgP1,MF990789.1,Other,Streptolancidin G
+slgP2,MF990789.1,Other,Streptolancidin G
+slhP,MF990790.1,Other,Streptolancidin H
+slhB,MF990790.1,Other,Streptolancidin H
+slhC,MF990790.1,Other,Streptolancidin H
+sliP,MF990791.1,Other,Streptolancidin I
+sliB,MF990791.1,Other,Streptolancidin I
+sliC,MF990791.1,Other,Streptolancidin I
+sljP,MF990792.1,Other,Streptolancidin J
+slsC,MF990794.1,Other,Streptolassin
+slsB1,MF990794.1,Other,Streptolassin
+slsB,MF990794.1,Other,Streptolassin
+slsB2,MF990794.1,Other,Streptolassin
+ssaCD,MF990795.1,Other,Streptosactin
+slaK,MF990783.1,Regulation,Streptolancidin A
+slhR,MF990790.1,Regulation,Streptolancidin H
+slhK,MF990790.1,Regulation,Streptolancidin H
+sliR,MF990791.1,Regulation,Streptolancidin I
+sliK,MF990791.1,Regulation,Streptolancidin I
+slsR,MF990794.1,Regulation,Streptolassin
+slsK,MF990794.1,Regulation,Streptolassin
+blpH,na,Regulation,blp
+blpS,na,Regulation,blp
+blpC,na,Regulation,blp
+blpR,na,Regulation,blp
+tdpA,na,Unknown,blp
+scyD,MF990796.1,Transporter,Streptocyclicin
+blpA,na,Transporter,blp
+blpB,na,Transporter,blp
+slaT,MF990783.1,Transporter,Streptolancidin A
+slbT,MF990784.1,Transporter,Streptolancidin B
+slcT,MF990785.1,Transporter,Streptolancidin C
+sldT,MF990786.1,Transporter,Streptolancidin D
+sleT,MF990787.1,Transporter,Streptolancidin E
+slgT,MF990789.1,Transporter,Streptolancidin G
+slhT,MF990790.1,Transporter,Streptolancidin H
+sliT,MF990791.1,Transporter,Streptolancidin I
+sljT1,MF990792.1,Transporter,Streptolancidin J
+sljT2,MF990792.1,Transporter,Streptolancidin J
+sljT3,MF990792.1,Transporter,Streptolancidin J
+slkT,MF990793.1,Transporter,Streptolancidin K
+blpT,na,Unknown,blp
+blpV,na,Unknown,blp
+slcX,MF990785.1,Unknown,Streptolancidin C
+sleX1,MF990787.1,Unknown,Streptolancidin E
+sleX2,MF990787.1,Unknown,Streptolancidin E
+slhX1,MF990790.1,Unknown,Streptolancidin H
+slhX2,MF990790.1,Unknown,Streptolancidin H
+ssaX1,MF990795.1,Unknown,Streptosactin
+ssaX2,MF990795.1,Unknown,Streptosactin
+ssaX3,MF990795.1,Unknown,Streptosactin
+slaR,MF990783.1,Regulation,na
+cbpD,na,Unknown,na
+comFA,na,Unknown,na
+comD,na,Unknown,na
+comE,na,Unknown,na
+comFC,na,Unknown,na
+comC,na,Unknown,na
+comA,na,Unknown,na
+comEB,na,Unknown,na
+comEC,na,Unknown,na
+comEA,na,Unknown,na
+sljX,na,Unknown,na
+sljA,na,Unknown,na
+comM,na,Unknown,na
+comB,na,Unknown,na
+comYA,na,Unknown,na
+comYC,na,Unknown,na
+comYB,na,Unknown,na
