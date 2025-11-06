@@ -8,3 +8,41 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+This visualizes the outputs of state dependent EvoScope runs
+
+```{r}
+library(tidyverse)
+```
+
+EvoScope has a correlations folder that reports the output of the various models, as well as two processed files: a concatenated results, and a report on the best model
+
+The best model file has summarized information about the model fits, but does not report separate gain and loss events, so we need to combine these files. Finally, data is reported as pairs where order is not important (lambda1 or lambda2 can be the important bit). This filters all interactions so that the data is tidy and its only 1 directional edge per row
+
+```{r}
+
+# loading the data
+conc.data<-read_delim("EvoScopeData/EvoScopeData_correlations/EvoScopeData_correlations_ConcatenatedResults.tab")
+best.data<-read_delim("~/unil/GeneDependency/EvoScopeData/EvoScopeData_correlations/EvoScopeData_correlations_BestModel.tab")
+
+# merging the tables
+
+all.data<-left_join(best.data, conc.data, by = c("Event1" = "Event1", "Event2" = "Event2", "Model2" = "Model"))
+
+## creating a flipped version of the table, where e1 and e2 are reversed
+
+all.data.temp<- all.data %>% rename(name_e1 = name_e2, name_e2 = name_e1, lambda1 = lambda2, lambda2 = lambda1, mu1 = mu2, mu1star = mu2star, nu1 = nu2, nu1star = nu2star, mu2 = mu1, mu2star = mu1star, nu2 = nu1, nu2star = nu1star)
+
+## merging and dropping duplicate data
+all.data<-bind_rows(all.data, all.data.temp) %>% select(!c("Event1", "Event2", "lambda2", "df", "Model1", "Model2", "LRT", "Pvalue", "Tree", "logPVAL", "lnML", "ML", "mu2", "mu2star", "nu2", "nu2star")) %>% rename(lambda = lambda1, mu = mu1, mustar = mu1star, nu = nu1, nustar = nu1star) 
+
+## creating a lambda_nu column
+all.data$lambda_nu <- all.data$nustar / all.data$nu
+
+```
+```{r}
+ggplot(all.data, aes(x=nu, y=mu)) + geom_point() + labs(x = "base loss rate (nu)", y = "base gain rate (mu)")
+ggplot(all.data, aes(x=nustar, y=mustar)) + geom_point() + labs(x = "excited loss rate (nu*)", y = "excited gain rate (mu*)") + scale_x_continuous(trans="log10") + scale_y_continuous(trans="log10")
+ggplot(all.data, aes(x=lambda_nu, y=lambda)) + geom_point() + labs(x = "excitation loss ratio (lambda_nu)", y = "excitation gain ratio (lambda)") + scale_x_continuous(trans="log10") + scale_y_continuous(trans="log10")
+```
+
