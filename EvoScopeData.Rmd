@@ -1,0 +1,98 @@
+---
+title: "EvoScopeAnalysis"
+author: "Elliott Greene"
+date: "2025-05-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(forcats)
+library(fuzzyjoin)
+library(tidygraph)
+library(ggraph)
+library(ggfx)
+library(patchwork)
+```
+
+```{r}
+blp.data<-read_delim("EvoScopeBLP.tab") %>% select(!c("logPVAL", "LRT", "Event1", "Event2", "Model1", "Model2", "combinedModels", "df"))
+
+blp.annotations<-read_delim("gene_annotations.csv") %>% select(c("gene", "functions")) %>% mutate(newFunctions = case_when(functions %in% c("Regulation") ~ "Quorum Sensing", functions %in% c("Transporter") ~ "Transporter", functions %in% c("Modification", "Other") ~ "Other", functions %in% c("Bacteriocin precursor") ~ "Bacteriocin Precursor", functions %in% c("Immunity") ~ "Immunity", functions %in% c("Unknown") ~ "Unknown")) %>% select(!c(functions)) %>% rename(functions = newFunctions)
+```
+Splitting the dataframe so it's more tidy
+```{r}
+blp.temp<- blp.data %>% select(c("Pvalue", "name_e1", "name_e2", "lambda2")) %>% rename(name_e1 = name_e2, name_e2 = name_e1, lambda1 = lambda2)
+
+blp.data<-bind_rows(blp.data, blp.temp) %>% select(!c("lambda2")) %>% rename(lambda = lambda1)
+```
+
+```{r}
+e_c<-full_join( 
+  blp.data %>% filter(lambda != 1.0) %>% count(name_e1) %>% rename(gene = name_e1, Inducing = n), 
+  blp.data %>% filter(lambda != 1.0) %>% count(name_e2) %>% rename(gene = name_e2, Induced = n)) %>% mutate(Induced = replace_na(Induced,0)) %>% mutate(Inducing = replace_na(Inducing,0)) %>% mutate(across(Induced, ~ . * -1) )%>% regex_inner_join(blp.annotations, by=c("gene" = "gene"), ignore_case = TRUE) %>% select(!gene.x) %>% rename(gene=gene.y) %>% mutate(gene = fct_reorder(gene, desc(Inducing+Induced))) %>% pivot_longer(cols=c("Inducing", "Induced"), names_to="relationship") 
+
+## Making a vector for colors on the x axis
+colvec<-unique(blp.annotations$functions)
+
+p_y<-ggplot(e_c) + geom_col(aes(y = 1, x = gene, fill = functions, color = functions))  + scale_fill_manual(values = c("black", "#5b2959", "#1c692a", "#927c3e", "white")) + scale_color_manual(values = c("black", "#5b2959", "#1c692a", "#927c3e", "black")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        axis.ticks.y = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        panel.background = element_blank(), 
+        plot.background = element_blank()) + xlab("Gene")
+
+
+p_data<-ggplot(e_c, aes(gene, y = value, fill = relationship)) + geom_bar(color = "black",stat="identity", position = position_dodge(width = 0.0)) + theme_light() +  theme(axis.text.x = element_blank(), axis.title.x = element_blank(), axis.ticks.x = element_blank()) + ylab("Number of co-evolving genes") + scale_y_continuous(breaks = c(-10, -5, 0, 5, 10), labels = c(10, 5, 0, 5, 10)) +  scale_fill_discrete(name="Relationship", labels = c("Induced", "Inducing")) + scale_fill_manual(values=c("white", "black"))
+```
+
+
+```{r}
+layout<-c(area(t=1, l = 1, b = 6, r = 4),
+          area(t=6, l = 1, b= 7, r =4))
+p_data+plot_spacer()+p_y+plot_layout(heights = c(1.0, -0.12,0.05) )
+#p_data+inset_element(p_y, left = 0.0, bottom = 0.1, right = 1.5, top = 0.9)
+```
+
+
+Visualizing the dataset as a network of evolutionary dependencies
+```{r}
+blp.filtered <- blp.data %>% filter(lambda != 1.0, !(name_e1 %in% c("blps", "pncg")), !(name_e2 %in% c("blps", "pncg"))) %>%   mutate(across(
+    # For every column you want...
+    everything(),
+
+    # ...change its values where appropriate:
+    ~ case_when(
+      # +Inf becomes the finite max.
+      . ==  Inf ~ max(.[is.finite(.)]),
+      # -Inf becomes the finite min.
+      . == -Inf ~ min(.[is.finite(.)]),
+      # Other values stay the same.
+      TRUE      ~ .
+    )
+  )) 
+
+nodes<-as.data.frame(unique(c(blp.filtered$name_e1, blp.filtered$name_e2))) %>% rename(gene = 'unique(c(blp.filtered$name_e1, blp.filtered$name_e2))') %>% regex_inner_join(blp.annotations, by=c("gene" = "gene"), ignore_case = TRUE) %>% select(!gene.x) %>% rename(gene=gene.y) %>% select(gene) %>% inner_join(blp.annotations)
+
+
+## need to foramt the edge data
+edges<- blp.filtered %>% select(c(name_e1, name_e2, lambda)) %>% arrange(name_e1, name_e2, lambda) %>% mutate(from = match(name_e1, unique(c(blp.filtered$name_e1, blp.filtered$name_e2))))%>% mutate(to = match(name_e2, unique(c(blp.filtered$name_e1, blp.filtered$name_e2)))) %>% select(!c("name_e1", "name_e2")) %>% mutate(logLambda = log10(lambda))
+
+g<-tbl_graph(edges = edges, nodes = nodes) |> mutate(Centrality = centrality_degree(mode="in"))
+```
+
+
+```{r}
+#ggraph(g, layout="linear") + geom_edge_link(aes(alpha = logLambda), arrow = arrow(length = unit(2, 'mm')), end_cap = circle(7, "mm"), start_cap = circle(7, "mm")) + geom_node_text(aes( label = gene, color = functions), show.legend = T ) + theme_graph() 
+
+p_g<-ggraph(g, layout="linear", circular = T) + geom_edge_arc(aes(alpha = lambda), arrow = arrow(length = unit(2, 'mm')), end_cap = circle(7, "mm"), start_cap = circle(7, "mm")) + geom_node_point(aes( color = functions, fill=functions),size = 0,   show.legend = T ) + theme_graph() + scale_color_manual(values = c("black", "#5b2959", "#1c692a", "#927c3e", "white")) 
+
+p_g + geom_node_text(aes(label = gene))
+```
+

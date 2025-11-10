@@ -13,7 +13,18 @@ This visualizes the outputs of state dependent EvoScope runs
 
 ```{r}
 library(tidyverse)
+library(ggplot2)
 ```
+```{r}
+toxin_color<-"#ff00ff"
+imm_color<-"#ff8001"
+quorum_color<-"#1dffff"
+transporter_color<-"#02ff00"
+unknown_color<-"#ffffff"
+other_color<-"#f12"
+colors<-c("Bacteriocin" = toxin_color, "Immunity" = imm_color, "Quorum Sensing" = quorum_color, "Transporter" = transporter_color, "Unknown" = unknown_color, "Other" = other_color)
+```
+
 
 EvoScope has a correlations folder that reports the output of the various models, as well as two processed files: a concatenated results, and a report on the best model
 
@@ -24,6 +35,8 @@ The best model file has summarized information about the model fits, but does no
 # loading the data
 conc.data<-read_delim("EvoScopeData/EvoScopeData_correlations/EvoScopeData_correlations_ConcatenatedResults.tab")
 best.data<-read_delim("~/unil/GeneDependency/EvoScopeData/EvoScopeData_correlations/EvoScopeData_correlations_BestModel.tab")
+annotations<-read_delim("~/unil/GeneDependency/gene_annotations.csv")
+
 
 # merging the tables
 
@@ -36,13 +49,57 @@ all.data.temp<- all.data %>% rename(name_e1 = name_e2, name_e2 = name_e1, lambda
 ## merging and dropping duplicate data
 all.data<-bind_rows(all.data, all.data.temp) %>% select(!c("Event1", "Event2", "lambda2", "df", "Model1", "Model2", "LRT", "Pvalue", "Tree", "logPVAL", "lnML", "ML", "mu2", "mu2star", "nu2", "nu2star")) %>% rename(lambda = lambda1, mu = mu1, mustar = mu1star, nu = nu1, nustar = nu1star) 
 
+## adding annotations to name_e1 (the focal gene)
+
+na_label <- "Not annotated"
+RMT_label <- "Regulation, Modification, Transport"
+
+all.data<-left_join(all.data, (annotations %>% select(!c("genbank_accession"))), by=c("name_e1" = "gene")) %>% mutate(functions = replace_na(functions, na_label)) %>% mutate(functions = recode(functions, "Other" = na_label)) %>% mutate(functions = recode(functions, "Unknown" = na_label)) %>% mutate(functions = recode(functions, "Regulation" = RMT_label))  %>% mutate(functions = recode(functions, "Modification" = RMT_label)) %>% mutate(functions = recode(functions, "Transporter" = RMT_label)) 
+
 ## creating a lambda_nu column
-all.data$lambda_nu <- all.data$nustar / all.data$nu
+all.data$lambda_nu <- all.data$nustar / all.data$nu 
 
 ```
 ```{r}
-ggplot(all.data, aes(x=nu, y=mu)) + geom_point() + labs(x = "base loss rate (nu)", y = "base gain rate (mu)")
-ggplot(all.data, aes(x=nustar, y=mustar)) + geom_point() + labs(x = "excited loss rate (nu*)", y = "excited gain rate (mu*)") + scale_x_continuous(trans="log10") + scale_y_continuous(trans="log10")
-ggplot(all.data, aes(x=lambda_nu, y=lambda)) + geom_point() + labs(x = "excitation loss ratio (lambda_nu)", y = "excitation gain ratio (lambda)") + scale_x_continuous(trans="log10") + scale_y_continuous(trans="log10")
+ggplot(all.data, aes(x=nu, y=mu, color = functions)) + geom_point() + labs(x = "base loss rate (nu)", y = "base gain rate (mu)") + scale_color_manual(values = c(toxin_color, imm_color, "black", quorum_color))
+
+ggplot(all.data, aes(x=nustar, y=mustar, color = functions)) + geom_point() + labs(x = "excited loss rate (nu*)", y = "excited gain rate (mu*)") + scale_x_continuous(trans="log10") + scale_y_continuous(trans="log10") + scale_color_manual(values = c(toxin_color, imm_color, "black", quorum_color))
+
+ggplot(all.data, aes(x=lambda_nu, y=lambda, color = functions)) + geom_point() + labs(x = "excitation loss ratio (lambda_nu)", y = "excitation gain ratio (lambda)") + scale_x_continuous(trans="log10") + scale_y_continuous(trans="log10")+ scale_color_manual(values = c(toxin_color, imm_color, "black", quorum_color))
+```
+
+Relationship between genes:
+
+Which gene is most connected
+
+```{r}
+
+## need to filter the non-induced edges arising from how I tidied the data. Also reattaching the annotations after the transformation
+
+## receives connections
+
+induced <- all.data %>% filter(lambda != 1.0 & lambda_nu != 1.0 ) %>% count(name_e1, sort = TRUE) %>% rename(gene = name_e1, induced = n)
+
+## need to filter the non-interesting links. We can do this by excluding  the edges that have the "ia" or "ib" model (one-way induction), but lambda / lambda_nu of only 1, since these are the "inducing edges"
+
+inducing <- all.data %>% filter(!(lambda == 1.0 & lambda_nu == 1.0 & combinedModels == "ia"), !(lambda == 1.0 & lambda_nu == 1.0 & combinedModels == "ib")) %>% count(name_e2, sort = TRUE) %>% rename(gene = name_e2, inducing = n)
+
+## finding median rate of gain and loss (mu and nu) across all data with valid lambda. Begin by filtering out lambda values that have zeros
+
+average_rates <- all.data %>% filter(lambda != 0.0 & lambda != Inf) %>% group_by(name_e1) %>% summarize(mean_mu = mean(mu), median_mu = median(mu), mean_nu = mean(nu), median_nu = median(nu)) %>% rename(gene = name_e1)
+
+all.induction<-full_join(induced, inducing) %>% replace_na(list(induced = 0, inducing = 0)) %>% left_join( (annotations %>% select(!c("genbank_accession"))), by=c("gene" = "gene")) %>% mutate(functions = replace_na(functions, na_label)) %>% mutate(functions = recode(functions, "Other" = na_label)) %>% mutate(functions = recode(functions, "Unknown" = na_label)) %>% mutate(functions = recode(functions, "Regulation" = RMT_label))  %>% mutate(functions = recode(functions, "Modification" = RMT_label)) %>% mutate(functions = recode(functions, "Transporter" = RMT_label)) %>% left_join(average_rates, by="gene")
+
+```
+
+```{r}
+
+## inducing vs induced
+ggplot(all.induction, aes(x = induced, y = inducing)) + geom_point(aes(color = functions)) + scale_color_manual(values = c(toxin_color, imm_color, "black", quorum_color)) + ggtitle("Comparison of induced and inducing \n relationships between each gene")
+
+## rate comparison
+ggplot(all.induction, aes(x = median_mu, y = inducing)) + geom_point(aes(color = functions)) + scale_color_manual(values = c(toxin_color, imm_color, "black", quorum_color)) + ggtitle("Relationship between base gene \n acquisition rate and number of \n genes encouraged to be acquired")
+
+ggplot(all.induction, aes(x = median_mu, y = induced)) + geom_point(aes(color = functions)) + scale_color_manual(values = c(toxin_color, imm_color, "black", quorum_color)) + ggtitle("Relationship between base  \n acquisition rate and dependency \n on other genes")
 ```
 
